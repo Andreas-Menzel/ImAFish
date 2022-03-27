@@ -1,19 +1,63 @@
 import argparse
-from random import random
+from random import choice, random
 import requests
+from time import sleep
+
+
+def check_positive(value):
+    ivalue = int(value)
+    if ivalue <= 0:
+        raise argparse.ArgumentTypeError("%s is an invalid positive int value" % value)
+    return ivalue
 
 # Setup argument parser
-parser = argparse.ArgumentParser(description='', prog='ImAFish')
+prog_epilog = 'FIXED PARAMETER' + '\n'
+prog_epilog += 'Uses a fixed value for a parameter.' + '\n'
+prog_epilog += 'usage:\t\t--param <name>#<value>' + '\n'
+prog_epilog += 'example:\t--param user#superuser' + '\n\n'
+
+prog_epilog += 'RANDOM STRING PARAMETER' + '\n'
+prog_epilog += 'Generates a random string for a parameter.' + '\n'
+prog_epilog += 'usage:\t\t--param_random_str <name>#<min_len>#<max_len>#<chars>' + '\n'
+prog_epilog += 'example:\t--param_random_str password#8#12#abcdef123' + '\n\n'
+
+prog_epilog += 'RANDOM ELEMENT PARAMETER' + '\n'
+prog_epilog += 'Choses a random element from a list as the value for a parameter.' + '\n'
+prog_epilog += 'usage:\t\t--param_random_elem <name>#<value0>#<value1>#...' + '\n'
+prog_epilog += 'example:\t--param_random_elem website#example.com#example.net' + '\n\n'
+
+prog_epilog += 'RANDOM FILE ELEMENT PARAMETER' + '\n'
+prog_epilog += 'Choses a random element from a list of a file as the value for a parameter.' + '\n'
+prog_epilog += 'usage:\t\t--param_random_file_elem <name>#<filename>' + '\n'
+prog_epilog += 'example:\t--param_random_file_elem password#passList.txt' + '\n\n'
+
+parser = argparse.ArgumentParser(description='', epilog=prog_epilog, prog='ImAFish', formatter_class=argparse.RawDescriptionHelpFormatter,)
 parser.add_argument('--url',
     help='The URL.')
+parser.add_argument('--runs',
+    type=check_positive,
+    default=1,
+    help='Number of runs.')
+parser.add_argument('--delay',
+    type=check_positive,
+    default=1,
+    help='Delay in seconds between each run.')
+parser.add_argument('-v', '--verbose',
+    action='store_true',
+    help='Print more information')
 parser.add_argument('--param',
     nargs='*',
-    help='Fixed parameters.')
-parser.add_argument('--param_random',
+    help='Fixed parameter.')
+parser.add_argument('--param_random_str',
     nargs='*',
-    help='Sends parameter. Generates random string.')
+    help='Random string parameter.')
+parser.add_argument('--param_random_elem',
+    nargs='*',
+    help='Random element parameter.')
+parser.add_argument('--param_random_file_elem',
+    nargs='*',
+    help='Random element from file parameter.')
 args = parser.parse_args()
-
 
 
 def random_string(min_len, max_len, chars):
@@ -24,25 +68,48 @@ def random_string(min_len, max_len, chars):
     return random_string
 
 
+for i in range(1,args.runs + 1):
+    parameters = {}
 
-parameters = {}
+    # param
+    if not args.param == None:
+        for elem in args.param:
+            parameter = elem.split('#')
+            key = parameter[0]
+            value = parameter[1]
+            parameters[key] = value
 
-# param
-if not args.param == None:
-    for elem in args.param:
-        parameter = elem.split('#')
-        key = parameter[0]
-        value = parameter[1]
-        parameters[key] = value
+    # param_random_str
+    if not args.param_random_str == None:
+        for elem in args.param_random_str:
+            parameter = elem.split('#')
+            key = parameter[0]
+            value = random_string(int(parameter[1]), int(parameter[2]), parameter[3])
+            parameters[key] = value
 
-# param_random
-if not args.param_random == None:
-    for elem in args.param_random:
-        parameter = elem.split('#')
-        key = parameter[0]
-        value = random_string(int(parameter[1]), int(parameter[2]), parameter[3])
-        parameters[key] = value
+    # param_random_elem
+    if not args.param_random_elem == None:
+        for elem in args.param_random_elem:
+            parameter = elem.split('#')
+            key = parameter[0]
+            value = choice(parameter[1:])
+            parameters[key] = value
 
+    # param_random_file_elem
+    if not args.param_random_file_elem == None:
+        for elem in args.param_random_file_elem:
+            parameter = elem.split('#')
+            key = parameter[0]
+            with open(parameter[1]) as file:
+                # take random line and remove '\n'
+                value = choice(list(file))[0:-1]
+            parameters[key] = value
 
-request = requests.post(args.url, parameters)
-print(request.text)
+    if args.verbose:
+        print('Sending request no.', i, 'with parameters', parameters)
+    else:
+        print('Sending request no.', i)
+    request = requests.post(args.url, parameters)
+
+    if i < args.runs:
+        sleep(args.delay)
