@@ -76,6 +76,7 @@ prog_epilog += 'usage:\t\t--param_random_file_elem <name>#<filename>' + '\n'
 prog_epilog += 'example:\t--param_random_file_elem password#passList.txt' + '\n\n'
 
 parser = argparse.ArgumentParser(description='', epilog=prog_epilog, prog='ImAFish', formatter_class=argparse.RawDescriptionHelpFormatter,)
+parser.add_argument('--version', action='version', version='%(prog)s v1.0.0')
 parser.add_argument('--url',
     help='The URL.')
 parser.add_argument('--runs',
