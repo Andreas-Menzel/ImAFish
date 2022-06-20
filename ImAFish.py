@@ -10,6 +10,12 @@ def check_positive(value):
         raise argparse.ArgumentTypeError("%s is an invalid positive int value" % value)
     return ivalue
 
+def check_not_negative(value):
+    ivalue = int(value)
+    if ivalue < 0:
+        raise argparse.ArgumentTypeError("%s is an invalid non-negative int value" % value)
+    return ivalue
+
 # Setup argument parser
 prog_epilog = 'FIXED PARAMETER' + '\n'
 prog_epilog += 'Uses a fixed value for a parameter.' + '\n'
@@ -39,7 +45,7 @@ parser.add_argument('--runs',
     default=1,
     help='Number of runs.')
 parser.add_argument('--delay',
-    type=check_positive,
+    type=check_not_negative,
     default=1,
     help='Delay in seconds between each run.')
 parser.add_argument('-v', '--verbose',
@@ -112,4 +118,5 @@ for i in range(1,args.runs + 1):
     request = requests.post(args.url, parameters)
 
     if i < args.runs:
-        sleep(args.delay)
+        if args.delay > 0:
+        	sleep(args.delay)
