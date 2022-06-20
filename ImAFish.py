@@ -122,49 +122,59 @@ def random_string(min_len, max_len, chars):
     return random_string
 
 
-for i in range(1,args.runs + 1):
-    parameters = {}
+# main
+#
+# Main function.
+#
+# @return   None
+def main():
+    for i in range(1,args.runs + 1):
+        parameters = {}
 
-    # param
-    if not args.param == None:
-        for elem in args.param:
-            parameter = elem.split('#')
-            key = parameter[0]
-            value = parameter[1]
-            parameters[key] = value
+        # param
+        if not args.param == None:
+            for elem in args.param:
+                parameter = elem.split('#')
+                key = parameter[0]
+                value = parameter[1]
+                parameters[key] = value
 
-    # param_random_str
-    if not args.param_random_str == None:
-        for elem in args.param_random_str:
-            parameter = elem.split('#')
-            key = parameter[0]
-            value = random_string(int(parameter[1]), int(parameter[2]), parameter[3])
-            parameters[key] = value
+        # param_random_str
+        if not args.param_random_str == None:
+            for elem in args.param_random_str:
+                parameter = elem.split('#')
+                key = parameter[0]
+                value = random_string(int(parameter[1]), int(parameter[2]), parameter[3])
+                parameters[key] = value
 
-    # param_random_elem
-    if not args.param_random_elem == None:
-        for elem in args.param_random_elem:
-            parameter = elem.split('#')
-            key = parameter[0]
-            value = choice(parameter[1:])
-            parameters[key] = value
+        # param_random_elem
+        if not args.param_random_elem == None:
+            for elem in args.param_random_elem:
+                parameter = elem.split('#')
+                key = parameter[0]
+                value = choice(parameter[1:])
+                parameters[key] = value
 
-    # param_random_file_elem
-    if not args.param_random_file_elem == None:
-        for elem in args.param_random_file_elem:
-            parameter = elem.split('#')
-            key = parameter[0]
-            with open(parameter[1]) as file:
-                # take random line and remove '\n'
-                value = choice(list(file))[0:-1]
-            parameters[key] = value
+        # param_random_file_elem
+        if not args.param_random_file_elem == None:
+            for elem in args.param_random_file_elem:
+                parameter = elem.split('#')
+                key = parameter[0]
+                with open(parameter[1]) as file:
+                    # take random line and remove '\n'
+                    value = choice(list(file))[0:-1]
+                parameters[key] = value
 
-    if args.verbose:
-        print('Sending request no.', i, 'with parameters', parameters)
-    else:
-        print('Sending request no.', i)
-    request = requests.post(args.url, parameters)
+        if args.verbose:
+            print('Sending request no.', i, 'with parameters', parameters)
+        else:
+            print('Sending request no.', i)
+        request = requests.post(args.url, parameters)
 
-    if i < args.runs:
-        if args.delay > 0:
-        	sleep(args.delay)
+        if i < args.runs:
+            if args.delay > 0:
+            	sleep(args.delay)
+
+
+if __name__ == '__main__':
+    main()
