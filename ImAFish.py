@@ -1,3 +1,21 @@
+#!/usr/bin/env python3
+
+#-------------------------------------------------------------------------------
+# ImAFish
+#
+# ImAFish is a simple python script to help hackers fill their phishing
+#     databases. It is a fun project to send http POST requests using pythons
+#     requests library. It can be used to automatically and semi-randomly fill
+#     out login forms of phishing sites.
+#
+# https://github.com/Andreas-Menzel/ImAFish
+#-------------------------------------------------------------------------------
+# @author: Andreas Menzel
+# @license: MIT License
+# @copyright: Copyright (c) 2022 Andreas Menzel
+#-------------------------------------------------------------------------------
+
+
 import argparse
 from random import choice, random
 import requests
