@@ -22,17 +22,37 @@ import requests
 from time import sleep
 
 
+# check_positive
+#
+# Checks whether a number is positive.
+#
+# @param    number  value   Value to be checked.
+#
+# @return   int     Returns the number converted to integer.
+#
+# @raise    argparse.ArgumentTypeError  If number is not positive.
 def check_positive(value):
     ivalue = int(value)
     if ivalue <= 0:
         raise argparse.ArgumentTypeError("%s is an invalid positive int value" % value)
     return ivalue
 
+
+# check_not_negative
+#
+# Checks whether a number is not negative.
+#
+# @param    number  value   Value to be checked.
+#
+# @return   int     Returns the number converted to integer.
+#
+# @raise    argparse.ArgumentTypeError  If number is not positive or 0.
 def check_not_negative(value):
     ivalue = int(value)
     if ivalue < 0:
         raise argparse.ArgumentTypeError("%s is an invalid non-negative int value" % value)
     return ivalue
+
 
 # Setup argument parser
 prog_epilog = 'FIXED PARAMETER' + '\n'
@@ -84,6 +104,15 @@ parser.add_argument('--param_random_file_elem',
 args = parser.parse_args()
 
 
+# random_string
+#
+# Generates a random string within a given length range and character set.
+#
+# @param    int     min_len     Minimum length of the generated string.
+# @param    int     max_len     Maximum length of the generated string.
+# @param    [char]  chars       Character set.
+#
+# @return   string  Returns a random string with the given specifications.
 def random_string(min_len, max_len, chars):
     length = round(random() * (max_len - min_len) + min_len)
     random_string = ''
